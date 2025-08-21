@@ -31,8 +31,7 @@ namespace ImageConvertWebServer
 			await Logger.LogInfoAsync($"Server started at port {_port}");
 
 			// Ne treba nam ThreadPool direktno. Pokrećemo asinhronu petlju.
-			// _ = označava da nećemo čekati da se ovaj Task završi (fire and forget).
-			_ = ListenLoopAsync();
+			_ = ListenLoopAsync(); // _ => ne cekamo da se ovaj task zavrsi -> to se zove (fire and forget)
 		}
 
 		public async Task StopAsync()
@@ -54,17 +53,12 @@ namespace ImageConvertWebServer
 			{
 				try
 				{
-					// Asinhrono čekamo na klijenta, ne blokiramo nit.
+					// Asinhrono cekamo klijenta -> ne blokiramo nit
 					var client = await _listener.AcceptTcpClientAsync();
 					await Logger.LogInfoAsync($"NEW CONNECTION: {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
 
-					// Za svakog klijenta kreiramo i pokrećemo novi Task koji će ga obraditi.
-					// Ovo je moderna zamena za QueueUserWorkItem.
+					// Za svakog klijenta kreiramo i pokrećemo novi Task koji će ga obraditi umesto da mu dodelimo nit sa QueueUserWorkItem()
 					_ = Task.Run(() => RequestHandler.HandleClientAsync(new ClientContext(client, _rootFolder)));
-				}
-				catch (SocketException)
-				{
-					// Očekivana greška kada se pozove _listener.Stop(), možemo je ignorisati ili logovati kao info.
 				}
 				catch (Exception ex)
 				{

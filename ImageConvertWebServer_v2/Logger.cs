@@ -14,7 +14,7 @@ namespace ImageConvertWebServer
 		private static readonly string logFolder = Path.Combine(projectRoot, "Logs");
 		private static readonly string logFile = Path.Combine(logFolder, $"log_{DateTime.Now:yyyy-MM-dd}.txt");
 
-		// Umesto _lock, koristimo SemaphoreSlim(1, 1) koji se ponaša kao asinhroni lock
+		// Umesto _lock koristimo SemaphoreSlim(1, 1) koji se ponasa kao asinhroni lock (ima funkciju WaitAsync() --> ne prelazi u kernel dok je brojac veci od nula
 		private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
 		static Logger()
@@ -43,21 +43,19 @@ namespace ImageConvertWebServer
 			string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 			string fullMessage = $"[{timestamp}] [{type}] {message}" + Environment.NewLine;
 
-			// Čekamo da "uđemo" u semafor (ekvivalent početka lock bloka)
+			// Cekamo da udjemo u semafor (isto ko početak lock bloka)
 			await _semaphore.WaitAsync();
 			try
 			{
 				Console.Write(fullMessage);
 				// Koristimo asinhronu metodu za pisanje u fajl
-				//await File.AppendAllTextAsync(logFile, fullMessage); nije nam radilo
-				using (var sw = new StreamWriter(logFile, append: true))
+				using (var sw = new StreamWriter(logFile, append: true)) //await File.AppendAllTextAsync(logFile, fullMessage); nije nam radilo zbog verzije .NET-a
 				{
 					await sw.WriteAsync(fullMessage);
 				}
 			}
 			finally
 			{
-				// Oslobađamo semafor (ekvivalent kraja lock bloka)
 				_semaphore.Release();
 			}
 		}

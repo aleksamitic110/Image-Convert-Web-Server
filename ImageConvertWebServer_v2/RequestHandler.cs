@@ -10,7 +10,6 @@ namespace ImageConvertWebServer
 {
 	internal class RequestHandler
 	{
-		// Metoda sada vraća Task, a naziv konvencionalno završava sa "Async"
 		public static async Task HandleClientAsync(object state)
 		{
 			var context = (ClientContext)state;
@@ -24,7 +23,7 @@ namespace ImageConvertWebServer
 			{
 				try
 				{
-					// Asinhrono čitanje sa mreže
+					// Asinhrono citanje
 					string requestLine = await reader.ReadLineAsync();
 					if (string.IsNullOrEmpty(requestLine))
 					{
@@ -52,7 +51,7 @@ namespace ImageConvertWebServer
 						return;
 					}
 
-					// Čekamo na rezultat iz CacheManagera
+					// Asninhrono cekanje na rezultat iz keša
 					byte[] pngData = await CacheManager.GetPngImageAsync(requestedFilePath);
 
 					if (pngData == null)
@@ -76,8 +75,8 @@ namespace ImageConvertWebServer
 			await writer.WriteLineAsync("HTTP/1.1 200 OK");
 			await writer.WriteLineAsync("Content-Type: image/png");
 			await writer.WriteLineAsync("Content-Length: " + imageData.Length);
-			await writer.WriteLineAsync(); // Kraj headera
-										   // Asinhrono pisanje sirovih bajtova u stream
+			await writer.WriteLineAsync(); 
+										   
 			await writer.BaseStream.WriteAsync(imageData, 0, imageData.Length);
 		}
 

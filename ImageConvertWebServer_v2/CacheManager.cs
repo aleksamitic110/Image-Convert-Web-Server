@@ -14,7 +14,7 @@ namespace ImageConvertWebServer
 	{
 		private static ConcurrentDictionary<string, byte[]> _cache = new ConcurrentDictionary<string, byte[]>();
 
-		// Metoda je sada asinhrona
+		
 		public static async Task<byte[]> GetPngImageAsync(string jpgFilePath)
 		{
 			string key = Path.GetFileName(jpgFilePath).ToLowerInvariant();
@@ -28,7 +28,7 @@ namespace ImageConvertWebServer
 			{
 				await Logger.LogInfoAsync($"Nije pronadjen PNG u kešu za: {key}");
 
-				// Pozivamo i čekamo novu asinhronu metodu za konverziju
+				
 				byte[] pngBytes = await ImageLoader.ConvertJpgToPngAsync(jpgFilePath);
 
 				if (pngBytes != null)
