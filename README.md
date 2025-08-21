@@ -1,2 +1,2 @@
 # Image-Convert-Web-Server
-Faculty Project - Systems programming - project1
+Faculty Project - Systems programming
