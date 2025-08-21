@@ -9,12 +9,15 @@ namespace ImageConvertWebServer
 {
     internal class Logger
     {
-        private static readonly string logFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
-        private static readonly string logFile = Path.Combine(logFolder, $"log_{DateTime.Now:yyyy-MM-dd}.txt");
+		private static readonly string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\"));
+		private static readonly string logFolder = Path.Combine(projectRoot, "Logs");
+		private static readonly string logFile = Path.Combine(logFolder, $"log_{DateTime.Now:yyyy-MM-dd}.txt");
         private static readonly object _lock = new object();
 
         static Logger()
         {
+            Console.WriteLine(logFolder);
+
             if (!Directory.Exists(logFolder))
                 Directory.CreateDirectory(logFolder);
         }
