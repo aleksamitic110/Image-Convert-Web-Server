@@ -1,0 +1,11 @@
+Zadatak 22:
+Kreirati Web server koji vrši konverziju slike iz JPG formata u PNG. Svi zahtevi serveru se šalju
+preko browser-a korišćenjem GET metode. U zahtevu se kao parametar navodi naziv fajla,
+odnosno slike. Server prihvata zahtev, pretražuje root folder za zahtevani fajl i vrši konverziju.
+Ukoliko traženi fajl ne postoji, vratiti grešku korisniku.
+Primer poziva serveru: http://localhost:5050/test.jpg
+
+
+1. Kreiranje web servera
+2. GET metodu (client(parametar) -> server (obradi) -> client(obradjeni parametar))
+3. Server ima neki rootFolder
