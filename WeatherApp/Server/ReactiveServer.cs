@@ -12,6 +12,38 @@ using WeatherApp.Services;
 
 namespace WeatherApp.Server
 {
+
+
+	public class ReactiveServer
+	{
+		private readonly HttpListener _listener;
+		private readonly Subject<HttpListenerContext> _requestStream;
+
+		public ReactiveServer(string prefix)
+		{
+			_listener = new HttpListener();
+			_listener.Prefixes.Add(prefix);
+			_requestStream = new Subject<HttpListenerContext>();
+		}
+
+		public IObservable<HttpListenerContext> RequestStream => _requestStream;
+
+		public async Task StartAsync()
+		{
+			_listener.Start();
+			Console.WriteLine("Server started... Listening for requests.");
+
+			while (true)
+			{
+				var context = await _listener.GetContextAsync();
+				_requestStream.OnNext(context); // Push u Rx pipeline
+			}
+		}
+	}
+
+
+
+	/*
 	public class ReactiveServer
 	{
 		private readonly HttpListener _listener;
@@ -77,7 +109,9 @@ namespace WeatherApp.Server
 				double.TryParse(queryParams["lat"], out latitude);
 				double.TryParse(queryParams["lon"], out longitude);
 
-				
+				logEntry.Latitude = latitude;
+				logEntry.Longitude = longitude;
+
 
 
 				var openMeteoService = new OpenMeteoService();
@@ -88,11 +122,20 @@ namespace WeatherApp.Server
 				{
 					responseString = System.Text.Json.JsonSerializer.Serialize(airQuality);
 					context.Response.ContentType = "application/json";
+
+					logEntry.Success = true;
+					logEntry.StatusCode = 200;
+					logEntry.AirQuality = airQuality;
+
 				}
 				else
 				{
 					responseString = "{\"error\":\"Unable to fetch air quality\"}";
 					context.Response.ContentType = "application/json";
+
+					logEntry.Success = false;
+					logEntry.StatusCode = 502; // ili 500, kako želiš
+
 				}
 
 				byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
@@ -100,7 +143,6 @@ namespace WeatherApp.Server
 				await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
 				context.Response.OutputStream.Close();
 
-				logEntry.Success = true;
 				await Logger.LogRequestAsync($"{method} {url} from {clientIP}");
 
 			}
@@ -108,13 +150,17 @@ namespace WeatherApp.Server
 			{
 				logEntry.Success = false;
 				logEntry.ErrorMessage = ex.Message;
+				logEntry.StatusCode = 500;
 				await Logger.LogErrorAsync($"Error handling request: {ex.Message}");
 			}
 			finally
 			{
 				// Emitujemo logEntry u Rx stream
+				sw.Stop();
+				logEntry.ElapsedMs = sw.ElapsedMilliseconds;
 				_requestStream.OnNext(logEntry);
 			}
 		}
 	}
+	*/
 }
