@@ -16,16 +16,12 @@ namespace WeatherApp.Models
 
 		public bool Success { get; set; }
 		public string? ErrorMessage { get; set; }
-
-		// Novo: status HTTP odgovora i trajanje obrade (ms)
 		public int? StatusCode { get; set; }
 		public long? ElapsedMs { get; set; }
 
-		// Novo: koordinate iz upita, radi filtriranja po lokaciji
 		public double? Latitude { get; set; }
 		public double? Longitude { get; set; }
 
-		// Novo: poslednji dobijeni AQ rezultat (radi agregacije)
 		public AirQualityData? AirQuality { get; set; }
 	}
 }

@@ -26,21 +26,21 @@ namespace WeatherApp.Services
 
 				var response = await _httpClient.GetAsync(url);
 				response.EnsureSuccessStatusCode();
-				var jsonString = await response.Content.ReadAsStringAsync();
+				var jsonString = await response.Content.ReadAsStringAsync(); // Dobijemo string
 
-				// Parsiranje minimalnog JSON-a
-				using JsonDocument doc = JsonDocument.Parse(jsonString);
+				// Parsiramo u json 
+				using JsonDocument doc = JsonDocument.Parse(jsonString); 
 				var root = doc.RootElement;
 
-				// Ovde ćemo samo uzeti prvi vremenski slot za primer
-				var hourly = root.GetProperty("hourly");
+				
+				var hourly = root.GetProperty("hourly"); // Mogu i svi odmah da se upisu u AirQualityData
 				var time = hourly.GetProperty("time")[0].GetDateTime();
 				var pm10 = hourly.GetProperty("pm10")[0].GetDouble();
 				var pm25 = hourly.GetProperty("pm2_5")[0].GetDouble();
 				var co = hourly.GetProperty("carbon_monoxide")[0].GetDouble();
 				var no2 = hourly.GetProperty("nitrogen_dioxide")[0].GetDouble();
 
-				return new AirQualityData
+				return new AirQualityData 
 				{
 					Timestamp = time,
 					PM10 = pm10,
