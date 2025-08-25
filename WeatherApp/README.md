@@ -1,2 +1,2 @@
-# Weather app - third projcet 
+# Weather app (projekat 3)
 Faculty Project - Systems programming
